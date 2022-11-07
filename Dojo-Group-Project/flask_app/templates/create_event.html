@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <title>Create Event</title>
+</head>
+<body>
+    <div class="create-edit-title">
+        <h1>Create Event</h1>
+    </div>
+    <div class="edit-form">
+        <form method="post" action="/events/new/create">
+            {% with messages = get_flashed_messages(with_categories=true) %}     
+                {% if messages %}                            
+                    {% for category, message in messages %}            
+                    <p class="error text-center">{{message}}</p>                   
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <label for="name">Name</label>
+            <input class="form-control" type="text" name="name">
+            <label for="date">Date</label>
+            <input class="form-control" type="date" name="date">
+            <label for="time_start">Start Time</label>
+            <input class="form-control" type="time" name="time_start">
+            <label for="time_end">End Time</label>
+            <input class="form-control" type="time" name="time_end">
+            <label for="address">Address (123 Sesame St, Seattle, WA, 90210)</label>
+            <input class="form-control" type="text" name="address">
+            <label for="details">Description</label>
+            <input class="form-control" type="text" name="details">
+            <label for="options">Attire and Refreshments</label>
+            <input class="form-control" type="text" name="options">
+            <label for="guests">Maximum Number of Allowed Guests</label>
+            <input class="form-control" type="text" name="guests">
+            <label for="public">Private or Public Event</label>
+            <select class="form-control" name="public" id="public">
+                <option value="">
+                    Choose event publicity
+                </option>
+                <option value="0">
+                    Private
+                </option>
+                <option value="1">
+                    Public
+                </option>
+            </select>
+            <div class="create-cancel-edit d-flex justify-content-center">
+                <button class="btn btn-primary">Submit</button>
+            </div>
+    </form>
+    <form action="/dashboard">
+            <button class="btn btn-danger mt-3">Cancel</button>
+    </form>
+    </div>
+</body>
+</html>

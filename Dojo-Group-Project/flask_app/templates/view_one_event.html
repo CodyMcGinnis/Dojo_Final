@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+    <title>View Event</title>
+</head>
+<body>
+    {% if logged_in %}
+    <div class="buttons">
+        <form action="/dashboard">
+            <div class="create-button">
+                <button class="btn btn-primary" type="submit">Events</button>
+            </div>
+        </form> 
+        <form action="/signout">
+        <div class="logout-button">
+            <button class="btn btn-danger" type="submit">Logout</button>
+        </div>
+        </form>
+    </div>
+    {% endif %}
+    <div class="view-form">
+        <div class="view-block">
+            <h1>{{ one_event.name }}</h1>
+            <div class="details">
+                <h2>When</h2>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            <td>{{formatted_date}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col">Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            <td>{{ str_start_time }} to {{ str_end_time }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h2>What and Who</h2>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col">Attire and Refreshments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            <td>{{one_event.details}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col ">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            <td>{{one_event.options}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col">How many guests can you bring?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            <td>{{one_event.guests}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <thead>
+                        <tr class="d-flex justify-content-center">
+                            <th scope="col ">Public or private event?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="d-flex justify-content-center">
+                            {% if one_event.public == 0 %}
+                            <td>Private</td>
+                            {% else %}
+                            <td>Public</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="location">
+                <h2>Where</h2>
+                <p>{{one_event.address}}</p>
+                <iframe
+                width="450"
+                height="250"
+                frameborder="0" style="border:0"
+                referrerpolicy="no-referrer-when-downgrade"
+                src= {{location}}
+                allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="view-form">
+    {% if the_creator %}
+        <div class="bot-invite">
+            <h2>Invite someone to the event!</h2>
+            <form action="/events/view/{{ one_event.id }}/invite" method="post">
+            {% with messages = get_flashed_messages(with_categories=true) %}     
+                {% if messages %}                            
+                    {% for category, message in messages %}            
+                    <p class="error text-center">{{message}}</p>                   
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+                    <label for="name">Name</label>
+                    <input class="form-control" type="text" name="name">
+                    <label for="email">Email</label>
+                    <input class="form-control" type="text" name="email">
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+            </form>
+        </div>
+    {% elif (not logged_in) and (not token) %}
+        <div class="attend-box">
+            <h2>Attend</h2>
+            <form action="/events/view/{{ one_event.id }}/nUnT/attend" method="post">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}     
+                    {% if messages %}                            
+                        {% for category, message in messages %}            
+                        <p class="error text-center">{{message}}</p>                   
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <label for="name">Name</label>
+                <input class="form-control" type="text" name="name">
+                <label for="email">Email</label>
+                <input class="form-control" type="text" name="email">
+
+                <label for="guest_number">Bringing any Additional Guests?</label>
+                <input class="form-control" type="text" name="guest_number">
+
+                <label for="attending">Are you Attending?</label>
+                <select class="form-control" name="attending" id="attending">
+                    <option value="">
+                        Please choose an option
+                    </option>
+                    <option value="0">
+                        No
+                    </option>
+                    <option value="1">
+                        Yes
+                    </option>
+                    <option value="2">
+                        Maybe
+                    </option>
+                </select>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+        <div class="text-center">
+            <h2>Register</h2>
+            <p>Want to keep track of your events and have the option to change your RSVP?</p>
+            <a href="/">Sign Up</a>
+        </div>
+    {% elif (not logged_in) and (token) %}
+        <div class="attend-box" >
+            <h2>Attend</h2>
+            <p>Remember not to share your personal link!</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}     
+                {% if messages %}                            
+                    {% for category, message in messages %}            
+                    <p class="error text-center">{{message}}</p>                   
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="post" action="/events/view/{{ one_event.id }}/token/attend">
+                <label for="name">Name</label>
+                <input class="form-control" value="{{ token_entry['name'] }}" type="text" name="name">
+                <label for="email">Email</label>
+                <input class="form-control" value="{{ token_entry['email'] }}" type="email" name="email" readonly>
+                <label for="attending">Are you Attending?</label>
+                <select class="form-control" name="attending" id="attending">
+                    <option value="">
+                        Please choose an option
+                    </option>
+                    <option value="0">
+                        No
+                    </option>
+                    <option value="1">
+                        Yes
+                    </option>
+                    <option value="2">
+                        Maybe
+                    </option>
+                </select>
+                <label for="guest_number">Guest Number</label>
+                <input class="form-control" value="{{ token_entry['guest_number'] }}" type="text" name="guest_number">
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>
+        </div>
+        <div class="text-center">
+            <h2>Register</h2>
+            <p>Want to keep track of your events and have the option to change your RSVP?</p>
+            <a href="/">Sign Up</a>
+        </div>
+    {% elif logged_in %}
+        <div class="attend-box">
+            <h2>Attend or Update RSVP</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}     
+                {% if messages %}                            
+                    {% for category, message in messages %}            
+                    <p class="error text-center">{{message}}</p>                   
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form action="/events/view/{{ one_event.id }}/logged-in/attend" method="post">
+                <label for="attending">Are you Attending?</label>
+                <select class="form-control" name="attending" id="attending">
+                    <option value="">
+                        Please choose an option
+                    </option>
+                    <option value="0">
+                        No
+                    </option>
+                    <option value="1">
+                        Yes
+                    </option>
+                    <option value="2">
+                        Maybe
+                    </option>
+                </select>
+                    <label for="guest_number">Additional Guests</label>
+                    <input class="form-control" type="text" value="{{ logged_in_entry['guest_number'] }}" name="guest_number">
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+            </form>
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>
